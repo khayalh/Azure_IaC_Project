@@ -1,1 +1,1 @@
-# Azure_IaC_Project
+# AzureIaCProject
