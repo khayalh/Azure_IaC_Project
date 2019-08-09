@@ -1,0 +1,108 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "VMName": {
+      "value": "DevVM"
+    },
+    "VMAdminUserName": {
+      "value": "devadm"
+    },
+    "VMAdminPassword": {
+      "value": "A123456a"
+    },
+    "VMPublicIPDnsName": {
+      "value": "devvmtest"
+    },
+    "vmsqlsrvAdminLogin": {
+      "value": "devsqladm"
+    },
+    "vmsqlsrvAdminLoginPassword": {
+      "value": "A123456a"
+    },
+    "vmsqldbName": {
+      "value": "devsqldb"
+    },
+    "vmsqlimportStorageKeyType": {
+      "value": "StorageAccessKey"
+    },
+    "vmsqlimportStorageKey": {
+      "value": "QYYWlK9mvvPs5YvUMBspINrdCKdRBB7wg2PhYq0IGLxj4uv1m/hGsTA+1MiqaOJacNGvYiYMCSRY2NJC6BbGhw=="
+    },
+    "vmsqlimportStorageUri": {
+      "value": "https://dbbackupblogge.blob.core.windows.net/dbbackup/newBlog.bacpac"
+    },
+    "edition": {
+      "value": "Standard"
+    },
+    "poolDtu": {
+      "value": 50
+    },
+    "databaseDtuMin": {
+      "value": 0
+    },
+    "databaseDtuMax": {
+      "value": 50
+    },
+    "dscscript": {
+      "value": "devvmdsc.ps1"
+    },
+    "vmdscArchiveFileName": {
+      "value": "devvmdsc.zip"
+    },
+    "pfxcertpass": {
+      "value": "A123456a"
+    },
+    "thumbprint": {
+      "value": "DF74E1019287A8999A867CEC58E55E217F2459EE"
+    },
+    "NSGSecurityRules": {
+      "value": {
+        "SecurityRules": [
+          {
+            "name": "Allow8172",
+            "properties": {
+              "description": "Allow port 8172",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "8172",
+              "protocol": "Tcp",
+              "direction": "Inbound",
+              "priority": 100,
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "RDP",
+            "properties": {
+              "description": "Allow RDP port",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "direction": "Inbound",
+              "priority": 200
+            }
+          },
+          {
+            "name": "DenyAllInbound",
+            "properties": {
+              "description": "Block all incoming traffic",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "destinationPortRange": "*",
+              "protocol": "*",
+              "direction": "Inbound",
+              "priority": 300,
+              "access": "Deny"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

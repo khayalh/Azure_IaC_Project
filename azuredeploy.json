@@ -1,0 +1,457 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmstorageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "VMName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "VMAdminUserName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "VMAdminPassword": {
+      "type": "securestring"
+    },
+    "VMWindowsOSVersion": {
+      "type": "string",
+      "defaultValue": "2016-Datacenter",
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2016-Datacenter"
+      ]
+    },
+    "VMPublicIPDnsName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vmsqlsrvAdminLogin": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vmsqlsrvAdminLoginPassword": {
+      "type": "securestring"
+    },
+    "vmsqldbName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vmsqldbCollation": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "vmsqldbRequestedServiceObjectiveName": {
+      "type": "string",
+      "defaultValue": "ElasticPool",
+      "allowedValues": [
+        "Basic",
+        "S0",
+        "S1",
+        "S2",
+        "P1",
+        "P2",
+        "P3",
+        "ElasticPool"
+      ],
+      "metadata": {
+        "description": "Describes the performance level for Edition"
+      }
+    },
+    "vmsqlimportStorageKeyType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "vmsqlimportStorageKey": {
+      "type": "securestring"
+    },
+    "vmsqlimportStorageUri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "Auto-generated container in staging storage account to receive post-build staging folder upload"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Auto-generated token to access _artifactsLocation"
+      }
+    },
+    "NSGSecurityRules": {
+      "type": "object"
+    },
+    "edition": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "poolDtu": {
+      "type": "int",
+      "metadata": {
+        "description": "The Elastic Pool DTU."
+      }
+    },
+    "databaseDtuMin": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "The Elastic Pool database DTU min."
+      }
+    },
+    "databaseDtuMax": {
+      "type": "int",
+      "metadata": {
+        "description": "The Elastic Pool database DTU max."
+      }
+    },
+    "dscscript": {
+      "type": "string"
+    },
+    "vmdscArchiveFileName": {
+      "type": "string"
+    },
+    "thumbprint": {
+      "type": "string",
+      "metadata": {
+        "description": "thumprint of certificate"
+      }
+    },
+    "pfxcertpass": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the PFX certificate."
+      }
+    }
+  },
+  "variables": {
+    "vmstorageName": "[concat('vmstorage', uniqueString(resourceGroup().id))]",
+    "VmNetworkPrefix": "10.0.0.0/16",
+    "VmNetworkSubnet1Name": "Subnet-1",
+    "VmNetworkSubnet1Prefix": "10.0.0.0/24",
+    "VmNetworkSubnet2Name": "Subnet-2",
+    "VmNetworkSubnet2Prefix": "10.0.1.0/24",
+    "VMImagePublisher": "MicrosoftWindowsServer",
+    "VMImageOffer": "WindowsServer",
+    "VMOSDiskName": "VMOSDisk",
+    "VMVmSize": "Standard_D2_v2",
+    "VMVnetID": "[resourceId('Microsoft.Network/virtualNetworks', 'VmNetwork')]",
+    "VMSubnetRef": "[concat(variables('VMVnetID'), '/subnets/', variables('VmNetworkSubnet1Name'))]",
+    "VMStorageAccountContainerName": "vhds",
+    "VMNicName": "[concat(parameters('VMName'), 'NetworkInterface')]",
+    "VMPublicIPName": "VMPublicIP",
+    "vmsqlsrvName": "[concat('vmsqlsrv', uniqueString(resourceGroup().id))]",
+    "networkSecurityGroupNAme": "VMNSG",
+    "vmdscArchiveFolder": "DSC",
+    "elasticPoolName": "elasticPool"
+  },
+  "resources": [
+    {
+      "name": "[variables('vmstorageName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('vmstorageType')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "vmstorage"
+      },
+      "kind": "Storage"
+    },
+    {
+      "name": "VmNetwork",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+      ],
+      "tags": {
+        "displayName": "VmNetwork"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('VmNetworkPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('VmNetworkSubnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VmNetworkSubnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups' ,variables('networkSecurityGroupName'))]"
+              }
+            }
+          },
+          {
+            "name": "[variables('VmNetworkSubnet2Name')]",
+            "properties": {
+              "addressPrefix": "[variables('VmNetworkSubnet2Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups' ,variables('networkSecurityGroupName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-12-01",
+      "name": "[variables('networkSecurityGroupNAme')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "NSG"
+      },
+      "properties": {
+        "securityRules": "[parameters('NSGSecurityRules').SecurityRules]"
+      }
+    },
+    {
+      "name": "[variables('VMNicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'VmNetwork')]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('VMPublicIPName'))]"
+      ],
+      "tags": {
+        "displayName": "VMNic"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('VMSubnetRef')]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('VMPublicIPName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('VMName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('vmstorageName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('VMNicName'))]"
+      ],
+      "tags": {
+        "displayName": "VM"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('VMVmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('VMName')]",
+          "adminUsername": "[parameters('VMAdminUsername')]",
+          "adminPassword": "[parameters('VMAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('VMImagePublisher')]",
+            "offer": "[variables('VMImageOffer')]",
+            "sku": "[parameters('VMWindowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "VMOSDisk",
+            "vhd": {
+              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('vmstorageName')), '2016-01-01').primaryEndpoints.blob, variables('VMStorageAccountContainerName'), '/', variables('VMOSDiskName'), '.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('VMNicName'))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "name": "Microsoft.Powershell.DSC",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2016-03-30",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('VMName'))]"
+          ],
+          "tags": {
+            "displayName": "vmdsc"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "configuration": {
+                "url": "[concat(parameters('_artifactsLocation'), '/', variables('vmdscArchiveFolder'), '/', parameters('vmdscArchiveFileName'))]",
+                "script": "[parameters('dscscript')]",
+                "function": "Main",
+                "timestamp": 123456789
+              },
+              "configurationArguments": {
+                "nodeName": "[parameters('VMName')]",
+                "certfilelocation": "[concat(parameters('_artifactsLocation'), '/', 'CertFolder', '/', 'selfsignedcert.pfx', parameters('_artifactsLocationSasToken') )]",
+                "thumbprint": "[parameters('thumbprint')]"
+              }
+            },
+            "protectedSettings": {
+              "configurationUrlSasToken": "[parameters('_artifactsLocationSasToken')]",
+              "configurationArguments": {
+                "certcredential": {
+                  "Username": "[parameters('VMAdminUserName')]",
+                  "Password": "[parameters('pfxcertpass')]"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "[variables('VMPublicIPName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "VMPublicIP"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('VMPublicIPDnsName')]"
+        }
+      }
+    },
+    {
+      "name": "[variables('vmsqlsrvName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01-preview",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "vmsqlsrv"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('vmsqlsrvAdminLogin')]",
+        "administratorLoginPassword": "[parameters('vmsqlsrvAdminLoginPassword')]"
+      },
+      "resources": [
+        {
+          "name": "AllowAllWindowsAzureIps",
+          "type": "firewallrules",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('vmsqlsrvName'))]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          }
+        },
+        {
+          "name": "[variables('elasticPoolName')]",
+          "apiVersion": "2017-10-01-preview",
+          "type": "elasticPools",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[variables('vmsqlsrvName')]"
+          ],
+          "tags": {
+            "displayName": "ElasticPool"
+          },
+          "properties": {
+            "edition": "[parameters('edition')]",
+            "dtu": "[parameters('poolDtu')]",
+            "databaseDtuMin": "[parameters('databaseDtuMin')]",
+            "databaseDtuMax": "[parameters('databaseDtuMax')]"
+          }
+        },
+        {
+          "name": "[parameters('vmsqldbName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('vmsqlsrvName'))]",
+            "[variables('elasticPoolName')]"
+          ],
+          "tags": {
+            "displayName": "vmsqldb"
+          },
+          "properties": {
+            "collation": "[parameters('vmsqldbCollation')]",
+            "elasticPoolName": "[variables('elasticPoolName')]",
+            "maxSizeBytes": "1073741824",
+            "requestedServiceObjectiveName": "[parameters('vmsqldbRequestedServiceObjectiveName')]"
+          },
+          "resources": [
+            {
+              "name": "vmsqlimport",
+              "type": "extensions",
+              "apiVersion": "2014-04-01-preview",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', split(concat(variables('vmsqlsrvName'), '/', parameters('vmsqldbName')), '/')[0], split(concat(variables('vmsqlsrvName'), '/', parameters('vmsqldbName')), '/')[1])]"
+              ],
+              "tags": {
+                "displayName": "vmsqlimport"
+              },
+              "properties": {
+                "storageKeyType": "[parameters('vmsqlimportStorageKeyType')]",
+                "storageKey": "[parameters('vmsqlimportStorageKey')]",
+                "storageUri": "[parameters('vmsqlimportStorageUri')]",
+                "administratorLogin": "[parameters('vmsqlsrvAdminLogin')]",
+                "administratorLoginPassword": "[parameters('vmsqlsrvAdminLoginPassword')]",
+                "operationMode": "Import"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {}
+}
