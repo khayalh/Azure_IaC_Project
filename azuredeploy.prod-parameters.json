@@ -76,8 +76,8 @@
         "secretName": "prodthumbprint"
       }
     },
-    "certfilelocation": {
-      "value": "[concat(parameters('_artifactsLocation'), '/', 'CertFolder', '/', 'prodselfsignedcert.pfx', parameters('_artifactsLocationSasToken') )]"
+    "certfiles": {
+      "value": "prodselfsignedcert.pfx"
     },  
     "VMPublicIPName": {
       "value": "ProdEnvPublicIP"

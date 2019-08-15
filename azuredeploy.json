@@ -126,7 +126,7 @@
         "description": "thumprint of certificate"
       }
     },
-    "certfilelocation": {
+    "certfiles": {
       "type": "string",
       "metadata": {
         "description": "certificate file location"
@@ -321,7 +321,7 @@
               },
               "configurationArguments": {
                 "nodeName": "[parameters('VMName')]",
-                "certfilelocation": "[parameters('certfilelocation')]",
+                "certfilelocation": "[concat(parameters('_artifactsLocation'), '/', 'CertFolder', '/', parameters('certfiles'), parameters('_artifactsLocationSasToken') )]",
                 "thumbprint": "[parameters('thumbprint')]"
               }
             },
