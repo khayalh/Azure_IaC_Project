@@ -26,6 +26,11 @@ Configuration Main
             Name   = "Web-Mgmt-Service"
             Ensure = "Present"
         }
+        WindowsFeature ASP { 
+            Ensure    = "Present" 
+            Name      = "Web-Asp-Net45"
+            DependsOn = "[WindowsFeature]IIS"
+        }
         WindowsFeature WebCompression {
             Ensure    = "Present"
             Name      = "Web-Dyn-Compression"

@@ -2,9 +2,9 @@ Configuration Main
 {
 
     Param ( [string] $nodeName,
-            [string]$certfilelocation,
-            [string] $Thumbprint,
-            [PSCredential]$certcredential
+        [string] $certfilelocation,
+        [string] $Thumbprint,
+        [PSCredential]$certcredential
     )
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration
@@ -24,6 +24,11 @@ Configuration Main
             Name   = "Web-Mgmt-Console"
             Ensure = "Present"
         }
+        WindowsFeature ASP { 
+            Ensure    = "Present" 
+            Name      = "Web-Asp-Net45"
+            DependsOn = "[WindowsFeature]InstallWebServer"
+        } 
         WindowsFeature WebManagementService {
             Name   = "Web-Mgmt-Service"
             Ensure = "Present"
@@ -69,7 +74,7 @@ Configuration Main
             Ensure          = "Present"
         }   
         xRemoteFile DownloadPackage {            	
-            DestinationPath = "C:\Cert\selfsignedcert.pfx"
+            DestinationPath = "C:\Cert\devselfsignedcert.pfx"
             Uri             = $certfilelocation
             MatchSource     = $true
             DependsOn       = "[File]ArtifactsFolder" 
@@ -83,7 +88,7 @@ Configuration Main
         }
         xPfxImport ImportPfxCert {
             Thumbprint = "$Thumbprint"
-            Path       = "C:\Cert\selfsignedcert.pfx"
+            Path       = "C:\Cert\devselfsignedcert.pfx"
             Credential = $certcredential
             Location   = 'LocalMachine'
             Store      = "WebHosting"
@@ -91,23 +96,23 @@ Configuration Main
         }
         # Create the new Website with HTTP and HTTPS
         xWebsite NewWebsite {
-            Ensure          = "Present"
-            Name            = "prodvm.westeurope.cloudapp.azure.com"
-            State           = "Started"
-            PhysicalPath    = "C:\inetpub\wwwroot"
-            DependsOn       = @("[WindowsFeature]InstallWebServer", "[xPfxImport]ImportPfxCert")
-            BindingInfo     = @(
+            Ensure       = "Present"
+            Name         = "devvm.westeurope.cloudapp.azure.com"
+            State        = "Started"
+            PhysicalPath = "C:\inetpub\wwwroot"
+            DependsOn    = @("[WindowsFeature]InstallWebServer", "[xPfxImport]ImportPfxCert")
+            BindingInfo  = @(
                 MSFT_xWebBindingInformation {
                     Protocol              = "HTTPS"
                     Port                  = 443
-                    HostName              = "prodvm.westeurope.cloudapp.azure.com"
+                    HostName              = "devvm.westeurope.cloudapp.azure.com"
                     CertificateThumbprint = "$Thumbprint"
                     CertificateStoreName  = "WebHosting"
                 }
                 MSFT_xWebBindingInformation {
                     Protocol = "HTTP" 
                     Port     = "80"
-                    HostName = "prodvm.westeurope.cloudapp.azure.com"
+                    HostName = "devvm.westeurope.cloudapp.azure.com"
                 }
             )
         }

@@ -3,25 +3,35 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "VMName": {
-      "value": "DevVM"
+      "value": "DevEnvVM"
     },
     "VMAdminUserName": {
-      "value": "devadm"
+      "value": "devenvadm"
     },
     "VMAdminPassword": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "VMAdminPassword"
+      }
     },
     "VMPublicIPDnsName": {
-      "value": "devvmtest"
+      "value": "devenvstagevm"
     },
     "vmsqlsrvAdminLogin": {
-      "value": "devsqladm"
+      "value": "devenvsqladm"
     },
     "vmsqlsrvAdminLoginPassword": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "vmsqlsrvAdminLoginPassword"
+      }
     },
     "vmsqldbName": {
-      "value": "devsqldb"
+      "value": "sqldb"
     },
     "vmsqlimportStorageKeyType": {
       "value": "StorageAccessKey"
@@ -51,10 +61,38 @@
       "value": "devvmdsc.zip"
     },
     "pfxcertpass": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "pfxcertpass"
+      }
     },
     "thumbprint": {
-      "value": "DF74E1019287A8999A867CEC58E55E217F2459EE"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "devthumbprint"
+      }
+    },
+    "certfilelocation": {
+      "value": "[concat(parameters('_artifactsLocation'), '/', 'CertFolder', '/', 'devselfsignedcert.pfx', parameters('_artifactsLocationSasToken') )]"
+    },  
+    "VMPublicIPName": {
+      "value": "DevEnvPublicIP"
+    },
+    "VMNicName": {
+      "value": "DevEnvVMNic"
+    },
+    "networkSecurityGroupNAme": {
+      "value": "devenvvmnsg"
+    },
+    "VmNetwork": {
+      "value": "devenvvmnetwork"
+    },
+    "vmsqlsrvName": {
+      "value": "devenvvmsql"
     },
     "NSGSecurityRules": {
       "value": {
@@ -88,6 +126,34 @@
             }
           },
           {
+            "name": "Allow80",
+            "properties": {
+              "description": "Allow port 80",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "80",
+              "protocol": "Tcp",
+              "direction": "Inbound",
+              "priority": 300,
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "Allow443",
+            "properties": {
+              "description": "Allow port 443",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "443",
+              "protocol": "Tcp",
+              "direction": "Inbound",
+              "priority": 400,
+              "access": "Allow"
+            }
+          },
+          {
             "name": "DenyAllInbound",
             "properties": {
               "description": "Block all incoming traffic",
@@ -97,7 +163,7 @@
               "destinationPortRange": "*",
               "protocol": "*",
               "direction": "Inbound",
-              "priority": 300,
+              "priority": 500,
               "access": "Deny"
             }
           }

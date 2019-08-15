@@ -3,25 +3,35 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "VMName": {
-      "value": "ProdVM"
+      "value": "ProdEnVVM"
     },
     "VMAdminUserName": {
-      "value": "prodadm"
+      "value": "prodenvadm"
     },
     "VMAdminPassword": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjecKeyVaults"
+        },
+        "secretName": "VMAdminPassword"
+      }
     },
     "VMPublicIPDnsName": {
-      "value": "prodvm"
+      "value": "prodenvvm"
     },
     "vmsqlsrvAdminLogin": {
-      "value": "prodsqladm"
+      "value": "prodenvsqladm"
     },
     "vmsqlsrvAdminLoginPassword": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "vmsqlsrvAdminLoginPassword"
+      }
     },
     "vmsqldbName": {
-      "value": "prodsqldb"
+      "value": "sqldb"
     },
     "vmsqlimportStorageKeyType": {
       "value": "StorageAccessKey"
@@ -51,10 +61,38 @@
       "value": "prodvmdsc.zip"
     },
     "pfxcertpass": {
-      "value": "A123456a"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "pfxcertpass"
+      }
     },
     "thumbprint": {
-      "value": "DF74E1019287A8999A867CEC58E55E217F2459EE"
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+        },
+        "secretName": "prodthumbprint"
+      }
+    },
+    "certfilelocation": {
+      "value": "[concat(parameters('_artifactsLocation'), '/', 'CertFolder', '/', 'prodselfsignedcert.pfx', parameters('_artifactsLocationSasToken') )]"
+    },  
+    "VMPublicIPName": {
+      "value": "ProdEnvPublicIP"
+    },
+    "VMNicName": {
+      "value": "ProdEnvVMNic"
+    },
+    "networkSecurityGroupNAme": {
+      "value": "prodenvvmnsg"
+    },
+    "VmNetwork": {
+      "value": "prodenvvmnetwork"
+    },
+    "vmsqlsrvName": {
+      "value": "prodenvvmsql"
     },
     "NSGSecurityRules": {
       "value": {
