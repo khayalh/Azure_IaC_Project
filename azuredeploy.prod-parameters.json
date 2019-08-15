@@ -11,7 +11,7 @@
     "VMAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjecKeyVaults"
+          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
         },
         "secretName": "VMAdminPassword"
       }
@@ -78,7 +78,7 @@
     },
     "certfiles": {
       "value": "prodselfsignedcert.pfx"
-    },  
+    },
     "VMPublicIPName": {
       "value": "ProdEnvPublicIP"
     },
