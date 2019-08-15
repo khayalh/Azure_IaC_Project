@@ -17,7 +17,7 @@
       }
     },
     "VMPublicIPDnsName": {
-      "value": "devenvstagevm"
+      "value": "devenvvm"
     },
     "vmsqlsrvAdminLogin": {
       "value": "devenvsqladm"
