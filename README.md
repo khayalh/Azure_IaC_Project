@@ -62,4 +62,4 @@ Using Azure DevOps:
 5.	Connection to SQL and application setting should be parameterized for different environments.
 
 * Get Application from   https://github.com/BehbudSh/blogapp.git repository.
-* Get SQL db backups from https://github.com/BehbudSh/AzureIaCProject/blob/master/dbbackup/newBlog.bacpac URL. 
+* Get SQL db backups from https://github.com/khayalh/Azure_IaC_Project/blob/master/dbbackup/newBlog.bacpac URL. 
