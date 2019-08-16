@@ -11,7 +11,7 @@
     "VMAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+          "id": "/subscriptions/9f1d69d5-a8c4-43d6-a8fe-78743af3b499/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
         },
         "secretName": "VMAdminPassword"
       }
@@ -25,7 +25,7 @@
     "vmsqlsrvAdminLoginPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+          "id": "/subscriptions/9f1d69d5-a8c4-43d6-a8fe-78743af3b499/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
         },
         "secretName": "vmsqlsrvAdminLoginPassword"
       }
@@ -63,7 +63,7 @@
     "pfxcertpass": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+          "id": "/subscriptions/9f1d69d5-a8c4-43d6-a8fe-78743af3b499/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
         },
         "secretName": "pfxcertpass"
       }
@@ -71,7 +71,7 @@
     "thumbprint": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/956299bb-8825-464d-a682-38b7c674bc7c/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
+          "id": "/subscriptions/9f1d69d5-a8c4-43d6-a8fe-78743af3b499/resourceGroups/AzKeyVaultsRG/providers/Microsoft.KeyVault/vaults/ProjectKeyVaults"
         },
         "secretName": "devthumbprint"
       }
