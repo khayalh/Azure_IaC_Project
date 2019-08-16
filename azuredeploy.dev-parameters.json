@@ -40,7 +40,7 @@
       "value": "QYYWlK9mvvPs5YvUMBspINrdCKdRBB7wg2PhYq0IGLxj4uv1m/hGsTA+1MiqaOJacNGvYiYMCSRY2NJC6BbGhw=="
     },
     "vmsqlimportStorageUri": {
-      "value": "https://dbbackupblogge.blob.core.windows.net/dbbackup/newBlog.bacpac"
+      "value": "https://dbbackupblogg.blob.core.windows.net/blob/newBlog.bacpac"
     },
     "edition": {
       "value": "Standard"
