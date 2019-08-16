@@ -37,7 +37,7 @@
       "value": "StorageAccessKey"
     },
     "vmsqlimportStorageKey": {
-      "value": "BELfvoa6U/lznZA+NQg6uZM+tHFi6EahMXLzRTWXMi/wRGoRod6nlB9WTRThRCcvewbgRB+vGmLza0iVYM66pQ=="
+      "value": "t280EElNhLdWeLC13VsGQ/lXW26ufe3CoqLmlhye+N9IdeWIJFNC549ezmZqUO9VasY0ft87kVMO+o1Uo2v+mA=="
     },
     "vmsqlimportStorageUri": {
       "value": "https://dbbackupblogg.blob.core.windows.net/blob/newBlog.bacpac"
