@@ -97,7 +97,7 @@ Configuration Main
         # Create the new Website with HTTP and HTTPS
         xWebsite NewWebsite {
             Ensure       = "Present"
-            Name         = "devvm.westeurope.cloudapp.azure.com"
+            Name         = "devenvvm.westeurope.cloudapp.azure.com"
             State        = "Started"
             PhysicalPath = "C:\inetpub\wwwroot"
             DependsOn    = @("[WindowsFeature]InstallWebServer", "[xPfxImport]ImportPfxCert")
@@ -105,14 +105,14 @@ Configuration Main
                 MSFT_xWebBindingInformation {
                     Protocol              = "HTTPS"
                     Port                  = 443
-                    HostName              = "devvm.westeurope.cloudapp.azure.com"
+                    HostName              = "devenvvm.westeurope.cloudapp.azure.com"
                     CertificateThumbprint = "$Thumbprint"
                     CertificateStoreName  = "WebHosting"
                 }
                 MSFT_xWebBindingInformation {
                     Protocol = "HTTP" 
                     Port     = "80"
-                    HostName = "devvm.westeurope.cloudapp.azure.com"
+                    HostName = "devenvvm.westeurope.cloudapp.azure.com"
                 }
             )
         }

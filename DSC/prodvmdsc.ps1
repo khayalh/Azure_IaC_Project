@@ -109,7 +109,7 @@ Configuration Main
         # Create the new Website with HTTP and HTTPS
         xWebsite NewWebsite {
             Ensure          = "Present"
-            Name            = "prodvm.westeurope.cloudapp.azure.com"
+            Name            = "prodenvvm.westeurope.cloudapp.azure.com"
             State           = "Started"
             ApplicationPool = "AppPool"
             PhysicalPath    = "C:\inetpub\wwwroot"
@@ -118,14 +118,14 @@ Configuration Main
                 MSFT_xWebBindingInformation {
                     Protocol              = "HTTPS"
                     Port                  = 443
-                    HostName              = "prodvm.westeurope.cloudapp.azure.com"
+                    HostName              = "prodenvvm.westeurope.cloudapp.azure.com"
                     CertificateThumbprint = "$thumbprint"
                     CertificateStoreName  = "WebHosting"
                 }
                 MSFT_xWebBindingInformation {
                     Protocol = "HTTP" 
                     Port     = "80"
-                    HostName = "prodvm.westeurope.cloudapp.azure.com"
+                    HostName = "prodenvvm.westeurope.cloudapp.azure.com"
                 }
             )
         }
